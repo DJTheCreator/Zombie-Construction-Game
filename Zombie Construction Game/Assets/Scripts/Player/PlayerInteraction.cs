@@ -5,13 +5,14 @@ using UnityEngine;
 public class PlayerInteraction : MonoBehaviour
 {
     private Rigidbody2D heldObjectRB;
-    private bool isGrabbing;
-    [Header("Interaction")]
+    private bool isGrabbing, furnacePresent = false;
+    [Header("Interaction")] 
+    public KeyCode interactKey;
     public float interactionPointRadius;
     public LayerMask interactable;
     public Transform interactionPoint;
-    public RaycastHit2D grabbingArea;
-    public Collider2D interactionArea;
+    private RaycastHit2D grabbingArea;
+    private Collider2D[] interactionArea;
     
     // Start is called before the first frame update
     void Start()
@@ -22,19 +23,33 @@ public class PlayerInteraction : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Try using CircleCastAll and grabbing the first object. This way you can tell if there is more than one object and you can create more complex interactions
-        //Ex: putting materials into a furnace or placing them onto a counter.
         grabbingArea = Physics2D.CircleCast(interactionPoint.position, interactionPointRadius, Vector2.zero, Mathf.Infinity, interactable);
-        interactionArea = Physics2D.OverlapCircle(interactionPoint.position, interactionPointRadius, interactable);
+        interactionArea = Physics2D.OverlapCircleAll(interactionPoint.position, interactionPointRadius, interactable);
 
-        Debug.Log(grabbingArea.rigidbody);
-        if(!isGrabbing && Input.GetKeyDown(KeyCode.Space) && grabbingArea.rigidbody != null)
+        for (int i = 0; i < interactionArea.Length; i++)
+        {
+            if (interactionArea.Length > 0)
+            {
+                if (interactionArea[i].GetComponent<ObjectProperties>().isFurnace)
+                {
+                    furnacePresent = true;
+                }
+                else
+                {
+                    furnacePresent = false;
+                }
+            }
+        }
+        
+        //Debug.Log(grabbingArea.rigidbody.GetComponent<ObjectProperties>().isMaterial);
+        if(!isGrabbing && Input.GetKeyDown(KeyCode.Space) && grabbingArea.rigidbody != null && grabbingArea.rigidbody.GetComponent<ObjectProperties>().isMaterial)
         {
             isGrabbing = !isGrabbing;
             heldObjectRB = grabbingArea.rigidbody;
         } else if(isGrabbing && Input.GetKeyDown(KeyCode.Space) && grabbingArea.rigidbody != null)
         {
             isGrabbing = !isGrabbing;
+            furnaceCheck();
         }
 
         if (isGrabbing)
@@ -46,5 +61,17 @@ public class PlayerInteraction : MonoBehaviour
     void Grab()
     {
         heldObjectRB.position = interactionPoint.position;
+    }
+
+    void furnaceCheck()
+    {
+        if(furnacePresent)
+        {
+            //This is the code for when you place something into the furnace
+            if (heldObjectRB.GetComponent<ObjectProperties>().isMaterial)
+            {
+                Debug.Log("You placed " + heldObjectRB.name + " into the furnace");
+            }
+        }
     }
 }
