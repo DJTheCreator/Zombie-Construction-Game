@@ -519,7 +519,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 12
-  rotationSpeed: 450
+  rotationSpeed: 500
 --- !u!4 &1249854338
 Transform:
   m_ObjectHideFlags: 0
@@ -555,6 +555,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   interactionPoint: {fileID: 1829503823}
+  ironBarFab: {fileID: 5285227865220185804, guid: 18441fa56c90ff74e916bdb9da5f71ef, type: 3}
 --- !u!1 &1829503822
 GameObject:
   m_ObjectHideFlags: 0
@@ -693,7 +694,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 64cf8160a53ef7042adfecdddf1bdccf, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

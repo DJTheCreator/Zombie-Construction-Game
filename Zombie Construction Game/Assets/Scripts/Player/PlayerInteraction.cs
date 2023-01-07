@@ -13,6 +13,8 @@ public class PlayerInteraction : MonoBehaviour
     public Transform interactionPoint;
     private RaycastHit2D grabbingArea;
     private Collider2D[] interactionArea;
+    public GameObject ironBarFab;
+    private Vector2 furnaceCoords;
     
     // Start is called before the first frame update
     void Start()
@@ -33,6 +35,7 @@ public class PlayerInteraction : MonoBehaviour
                 if (interactionArea[i].GetComponent<ObjectProperties>().isFurnace)
                 {
                     furnacePresent = true;
+                    furnaceCoords = interactionArea[i].transform.position;
                 }
                 else
                 {
@@ -52,10 +55,8 @@ public class PlayerInteraction : MonoBehaviour
             furnaceCheck();
         }
 
-        if (isGrabbing)
-        {
-            Grab();
-        }
+        if (isGrabbing) {Grab();}
+
     }
     
     void Grab()
@@ -71,7 +72,16 @@ public class PlayerInteraction : MonoBehaviour
             if (heldObjectRB.GetComponent<ObjectProperties>().isMaterial)
             {
                 Debug.Log("You placed " + heldObjectRB.name + " into the furnace");
+                Destroy(heldObjectRB.gameObject);
+                StartCoroutine(Smelt(ironBarFab, furnaceCoords, 5f));
+
             }
         }
+    }
+
+    IEnumerator Smelt(GameObject preFab, Vector2 coords, float smeltingTime)
+    {
+        yield return new WaitForSeconds(smeltingTime);
+        Instantiate(preFab, coords, Quaternion.identity);
     }
 }
