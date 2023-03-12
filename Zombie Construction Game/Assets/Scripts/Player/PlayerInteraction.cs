@@ -52,7 +52,7 @@ public class PlayerInteraction : MonoBehaviour
         } else if(isGrabbing && Input.GetKeyDown(KeyCode.Space) && grabbingArea.rigidbody != null)
         {
             isGrabbing = !isGrabbing;
-            furnaceCheck();
+            FurnaceCheck();
         }
 
         if (isGrabbing) {Grab();}
@@ -64,7 +64,7 @@ public class PlayerInteraction : MonoBehaviour
         heldObjectRB.position = interactionPoint.position;
     }
 
-    void furnaceCheck()
+    void FurnaceCheck()
     {
         if(furnacePresent)
         {
