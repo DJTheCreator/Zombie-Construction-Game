@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
-public class PlayerBuilding : MonoBehaviour
+public class PlayerAnimation : MonoBehaviour
 {
-    public GameObject objectToPlace;
     private Animator animator;
     
     // Start is called before the first frame update
@@ -16,11 +16,7 @@ public class PlayerBuilding : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            Instantiate(objectToPlace, gameObject.transform.position, Quaternion.identity);
-        }
-        if (Input.GetKey(KeyCode.F))
+        if (Input.GetKey(KeyCode.F) && !GetComponentInParent<PlayerInteraction>().GetIsGrabbing())
         {
             animator.SetBool("IsPunching", true);
         }
@@ -28,5 +24,10 @@ public class PlayerBuilding : MonoBehaviour
         {
             animator.SetBool("IsPunching", false);
         }
+    }
+
+    public Animator getAnimator()
+    {
+        return animator;
     }
 }

@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PlayerInteraction : MonoBehaviour
 {
-    private Rigidbody2D heldObjectRB;
-    private bool isGrabbing, furnacePresent = false;
+    private Rigidbody2D heldObjectRB, selectedObjectRB;
+    private bool isGrabbing, furnacePresent = false, orePresent = false;
     [Header("Interaction")] 
     public KeyCode interactKey;
     public float interactionPointRadius;
@@ -27,7 +27,8 @@ public class PlayerInteraction : MonoBehaviour
     {
         grabbingArea = Physics2D.CircleCast(interactionPoint.position, interactionPointRadius, Vector2.zero, Mathf.Infinity, interactable);
         interactionArea = Physics2D.OverlapCircleAll(interactionPoint.position, interactionPointRadius, interactable);
-
+        
+        //The interaction area only sees objects that are in the Usable layer
         for (int i = 0; i < interactionArea.Length; i++)
         {
             if (interactionArea.Length > 0)
@@ -40,6 +41,15 @@ public class PlayerInteraction : MonoBehaviour
                 else
                 {
                     furnacePresent = false;
+                }
+                if (interactionArea[i].GetComponent<ObjectProperties>().GetOreType() != "None")
+                {
+                    orePresent = true;
+                    selectedObjectRB = interactionArea[i].GetComponent<Rigidbody2D>();
+                }
+                else
+                {
+                    orePresent = false;
                 }
             }
         }
@@ -56,6 +66,11 @@ public class PlayerInteraction : MonoBehaviour
         }
 
         if (isGrabbing) {Grab();}
+
+        if (!isGrabbing && Input.GetKeyDown(KeyCode.F) && grabbingArea.rigidbody != null && orePresent)
+        {
+            StartCoroutine(HitOre(0.48f));
+        }
 
     }
     
@@ -83,5 +98,21 @@ public class PlayerInteraction : MonoBehaviour
     {
         yield return new WaitForSeconds(smeltingTime);
         Instantiate(preFab, coords, Quaternion.identity);
+    }
+
+    public Rigidbody2D GetCurrentObject()
+    {
+        return selectedObjectRB;
+    }
+
+    public bool GetIsGrabbing()
+    {
+        return isGrabbing;
+    }
+
+    IEnumerator HitOre(float time)
+    {
+        yield return new WaitForSeconds(time);
+        heldObjectRB.GetComponent<OreProperties>().GetHit();
     }
 }
