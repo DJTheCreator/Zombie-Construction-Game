@@ -12,10 +12,10 @@ public class OreProperties : MonoBehaviour
         oreHealth--;
         Debug.Log(oreHealth);
 
-        if (oreHealth == 0)
+        if (oreHealth <= 0)
         {
-            Destroy(GetComponentInParent<Rigidbody2D>().gameObject);
             DropOre();
+            Destroy(GetComponentInParent<Rigidbody2D>().gameObject);
         }
     }
 

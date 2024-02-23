@@ -36,7 +36,7 @@ public class PlayerInteraction : MonoBehaviour
                 if (interactionArea[i].GetComponent<ObjectProperties>().isFurnace)
                 {
                     furnacePresent = true;
-                    furnaceCoords = interactionArea[i].transform.position;
+                    selectedObjectRB = interactionArea[i].GetComponent<Rigidbody2D>();
                 }
                 else
                 {
@@ -67,7 +67,7 @@ public class PlayerInteraction : MonoBehaviour
 
         if (isGrabbing) {Grab();}
 
-        if (!isGrabbing && Input.GetKeyDown(KeyCode.F) && grabbingArea.rigidbody != null && orePresent)
+        if (!isGrabbing && Input.GetKeyDown(KeyCode.F) && orePresent)
         {
             StartCoroutine(HitOre(0.48f));
         }
@@ -87,17 +87,11 @@ public class PlayerInteraction : MonoBehaviour
             if (heldObjectRB.GetComponent<ObjectProperties>().isMaterial)
             {
                 Debug.Log("You placed " + heldObjectRB.name + " into the furnace");
+                //Selected Object -> Furnace
+                selectedObjectRB.GetComponentInParent<Furnace>().Smelt(heldObjectRB.gameObject);
                 Destroy(heldObjectRB.gameObject);
-                StartCoroutine(Smelt(ironBarFab, furnaceCoords, 5f));
-
             }
         }
-    }
-
-    IEnumerator Smelt(GameObject preFab, Vector2 coords, float smeltingTime)
-    {
-        yield return new WaitForSeconds(smeltingTime);
-        Instantiate(preFab, coords, Quaternion.identity);
     }
 
     public Rigidbody2D GetCurrentObject()
@@ -113,6 +107,6 @@ public class PlayerInteraction : MonoBehaviour
     IEnumerator HitOre(float time)
     {
         yield return new WaitForSeconds(time);
-        heldObjectRB.GetComponent<OreProperties>().GetHit();
+        selectedObjectRB.GetComponentInParent<OreProperties>().GetHit();
     }
 }
