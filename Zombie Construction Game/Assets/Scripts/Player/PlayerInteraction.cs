@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerInteraction : MonoBehaviour
 {
     private Rigidbody2D heldObjectRB, selectedObjectRB;
-    private bool isGrabbing, furnacePresent = false, orePresent = false;
+    private bool isGrabbing, furnacePresent, stationPresent, orePresent;
     [Header("Interaction")] 
     public KeyCode interactKey;
     public float interactionPointRadius;
@@ -13,8 +13,6 @@ public class PlayerInteraction : MonoBehaviour
     public Transform interactionPoint;
     private RaycastHit2D grabbingArea;
     private Collider2D[] interactionArea;
-    public GameObject ironBarFab;
-    private Vector2 furnaceCoords;
     
     // Start is called before the first frame update
     void Start()
@@ -37,9 +35,14 @@ public class PlayerInteraction : MonoBehaviour
                 {
                     furnacePresent = true;
                     selectedObjectRB = interactionArea[i].GetComponent<Rigidbody2D>();
+                } else if (interactionArea[i].GetComponent<ObjectProperties>().isStation) //Not furnace but still station
+                {
+                    stationPresent = true;
+                    selectedObjectRB = interactionArea[i].GetComponent<Rigidbody2D>();
                 }
                 else
                 {
+                    stationPresent = false;
                     furnacePresent = false;
                 }
                 if (interactionArea[i].GetComponent<ObjectProperties>().GetOreType() != "None")
@@ -63,6 +66,9 @@ public class PlayerInteraction : MonoBehaviour
         {
             isGrabbing = !isGrabbing;
             FurnaceCheck();
+        } else if (Input.GetKeyDown(KeyCode.E))
+        {
+            StationCheck();
         }
 
         if (isGrabbing) {Grab();}
@@ -91,6 +97,16 @@ public class PlayerInteraction : MonoBehaviour
                 selectedObjectRB.GetComponentInParent<Furnace>().Smelt(heldObjectRB.gameObject);
                 Destroy(heldObjectRB.gameObject);
             }
+        }
+    }
+
+    void StationCheck()
+    {
+        if (stationPresent)
+        {
+            //All stations inherit from the abstract class Station.cs
+            //This contains the abstract EnterInteraction method which will call the specific station code
+            selectedObjectRB.gameObject.GetComponent<ObjectProperties>().getStationScript().EnterInteraction();
         }
     }
 
